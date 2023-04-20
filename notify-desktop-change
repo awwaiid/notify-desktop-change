@@ -1,0 +1,45 @@
+#!/bin/bash
+
+desktop=${1:-1}
+screen=1
+
+# Get $X and $Y from the mouse location
+eval $(xdotool getmouselocation --shell)
+
+# Assuming 1920x1080 and laptop below
+if [[ $Y -gt 1080 ]] ; then
+  screen=3
+elif [[ $X -gt 1920 ]] ; then
+  screen=2
+else
+  screen=1
+fi
+
+icon="□□□□□□□□□"
+
+case $desktop in
+  1) icon="▣□□\r□□□\r□□□";;
+  2) icon="□▣□\r□□□\r□□□";;
+  3) icon="□□▣\r□□□\r□□□";;
+  4) icon="□□□\r▣□□\r□□□";;
+  5) icon="□□□\r□▣□\r□□□";;
+  6) icon="□□□\r□□▣\r□□□";;
+  7) icon="□□□\r□□□\r▣□□";;
+  8) icon="□□□\r□□□\r□▣□";;
+  9) icon="□□□\r□□□\r□□▣";;
+esac
+
+echo "Notify desktop $desktop on screen $screen with icon $icon"
+
+killall -q aosd_cat
+
+# Forked version of xinerama aosd_cat
+# which adds "-P" for line spacing
+/bin/sh -c "echo '$icon'" | aosd_cat \
+  -l 0 \
+  -e 0 \
+  -n 'Bitstream Vera Sans Mono 32' \
+  -R red \
+  -x -35 -y -25 -p 8 \
+  -f 1000 -o 1000 -u 1000 \
+  -O $screen -P -26 -m
